@@ -67,6 +67,7 @@ footer{text-align:center;padding:35px;background:#f7f4ed;margin-top:40px}
 <input id="price" type="number" placeholder="Price ₹">
 <input id="desc" placeholder="Description">
 <input id="photo" type="file" accept="image/*">
+<button type="button" onclick="removePhoto()">REMOVE PHOTO</button>
 <button onclick="add()">ADD PRODUCT</button>
 <div id="manage"></div>
 </div>
@@ -127,6 +128,10 @@ document.getElementById("login").classList.add("hidden");
 }catch(error){
 alert("Login failed: "+error.message);
 }
+}
+function removePhoto(){
+  document.getElementById("photo").value = "";
+  alert("Photo removed");
 }
 function add(){
 let n=document.getElementById("name").value;
