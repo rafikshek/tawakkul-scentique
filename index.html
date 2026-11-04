@@ -57,7 +57,8 @@ footer{text-align:center;padding:35px;background:#f7f4ed;margin-top:40px}
 </div>
 <div class="panel" id="login">
 <h2>ADMIN LOGIN</h2>
-<input id="pin" type="password" placeholder="Admin PIN">
+<input id="email" type="email" placeholder="Admin Email">
+<input id="password" type="password" placeholder="Password">
 <button onclick="login()">LOGIN</button>
 </div>
 <div class="panel hidden" id="admin">
@@ -116,11 +117,16 @@ window.open("https://wa.me/"+WA+"?text="+msg);
 }
 function buy(i){let p=products[i];window.open("https://wa.me/"+WA+"?text="+encodeURIComponent("I want "+p.name+" ₹"+p.price))}
 function contact(){window.open("https://wa.me/"+WA)}
-function login(){
-if(document.getElementById("pin").value==="1234"){
+async function login(){
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+try{
+await signInWithEmailAndPassword(auth,email,password);
 document.getElementById("admin").classList.remove("hidden");
 document.getElementById("login").classList.add("hidden");
-}else alert("Wrong PIN");
+}catch(error){
+alert("Login failed: "+error.message);
+}
 }
 function add(){
 let n=document.getElementById("name").value;
@@ -138,9 +144,10 @@ function removeP(i){if(confirm("Delete product?")){products.splice(i,1);save();r
 render();
   </script>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
-
+  
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyAPq5hx7poa0LzvOSKnRQ860kW-KTMfNyU",
     authDomain: "tawakkul-scentique.firebaseapp.com",
@@ -153,6 +160,7 @@ render();
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
 </script>
 
 </body>
