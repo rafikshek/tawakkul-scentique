@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAWAKKUL SCENTIQUE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b0b;color:#eee;font-family:Georgia,serif}
+header{background:#080808;border-bottom:1px solid #b99a5b;padding:18px;text-align:center;position:sticky;top:0;z-index:5}
+.logo{font-size:27px;letter-spacing:5px;color:#d4b16b}
+.sub{font-size:10px;letter-spacing:5px;color:#c4a46a}
+nav{display:flex;justify-content:center;gap:18px;padding:14px;flex-wrap:wrap}
+button{cursor:pointer;border:0;padding:11px 16px;background:#c6a361;color:#111;border-radius:3px;font-weight:bold}
+button:hover{background:#e5c47e}
+.hero{text-align:center;padding:55px 15px;background:linear-gradient(#0009,#000b),url('https://images.unsplash.com/photo-1594035910387-fea47794261f?w=1200') center/cover}
+.hero h1{font-size:38px;color:#e4c27d}
+.hero p{color:#ddd}
+h2{text-align:center;color:#d6b574;font-weight:normal;letter-spacing:3px;margin:35px 0}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px;max-width:1000px;margin:auto}
+.card{background:#171717;border:1px solid #393127;padding:10px;text-align:center}
+.card img{width:100%;height:175px;object-fit:cover;background:#222}
+.card h3{font-size:17px;color:#e4c27d}
+.price{font-size:19px;margin:10px}
+.actions{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.actions button{padding:9px;font-size:12px}
+input,textarea,select{width:100%;padding:12px;margin:7px 0;background:#222;color:white;border:1px solid #8d7548;border-radius:4px}
+.panel{max-width:600px;margin:25px auto;padding:18px;background:#171717;border:1px solid #9c804c}
+.hidden{display:none}
+footer{text-align:center;padding:30px;color:#b9a37b;background:#080808;margin-top:40px}
+@media(min-width:650px){.products{grid-template-columns:repeat(4,1fr)}.card img{height:220px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">TAWAKKUL</div>
+ <div class="sub">SCENTIQUE</div>
+ <nav>
+  <a href="#home" style="color:#d5b777">HOME</a>
+  <a href="#shop" style="color:#d5b777">SHOP</a>
+  <a href="#contact" style="color:#d5b777">CONTACT</a>
+  <button onclick="showCart()">CART (<span id="count">0</span>)</button>
+ </nav>
+</header>
+
+<section class="hero" id="home">
+ <h1>Discover Your Signature Scent</h1>
+ <p>Luxury Fragrances • Premium Quality • Long Lasting</p>
+ <a href="#shop"><button>EXPLORE COLLECTION</button></a>
+</section>
+
+<h2>OUR COLLECTION</h2>
+<div class="products" id="products"></div>
+
+<div class="panel hidden" id="cart">
+ <h2>YOUR CART</h2>
+ <div id="cartItems"></div>
+ <h3 id="total"></h3>
+ <button onclick="checkout()">ORDER ON WHATSAPP</button>
+ <button onclick="closeCart()">CLOSE</button>
+</div>
+
+<div class="panel hidden" id="admin">
+ <h2>ADMIN PANEL</h2>
+ <input id="pname" placeholder="Perfume Name">
+ <input id="pprice" type="number" placeholder="Price ₹">
+ <input id="pdesc" placeholder="Description">
+ <label>Upload Product Photo</label>
+ <input id="pimage" type="file" accept="image/*">
+ <button onclick="addProduct()">ADD PRODUCT</button>
+ <h3>Manage Products</h3>
+ <div id="manage"></div>
+</div>
+
+<div class="panel" id="login">
+ <h2>ADMIN LOGIN</h2>
+ <input id="pin" type="password" placeholder="Admin PIN">
+ <button onclick="adminLogin()">LOGIN</button>
+ <p style="font-size:12px;color:#aaa">Demo PIN: 1234</p>
+</div>
+
+<section id="contact" style="text-align:center;padding:25px">
+ <h2>CONTACT US</h2>
+ <p>Order your favourite fragrance today.</p>
+ <button onclick="contactUs()">WHATSAPP US</button>
+</section>
+
+<footer>
+ <h3>TAWAKKUL SCENTIQUE</h3>
+ Premium Fragrances | Pan India Delivery
+ <p>© 2026 TAWAKKUL SCENTIQUE</p>
+</footer>
+
+<script>
+const WA="916305070016";
+const defaults=[
+ ["Tawakkul Aventues",999,"Premium signature fragrance"],
+ ["Blackcurrant",799,"Dark berry fragrance"],
+ ["Pineapple",799,"Fresh tropical fragrance"],
+ ["Birch",899,"Woody fragrance"],
+ ["Musk",699,"Clean warm fragrance"],
+ ["Royal Oud",1199,"Rich oud fragrance"]
+];
+let products=JSON.parse(localStorage.getItem("ts_products")||"null") ||
+ defaults.map((p,i)=>({id:i+1,name:p[0],price:p[1],desc:p[2],img:"https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500"}));
+let cart=[];
+
+function save(){localStorage.setItem("ts_products",JSON.stringify(products))}
+function render(){
+ document.getElementById("products").innerHTML=products.map(p=>`
+ <div class="card">
+ <img src="${p.img}" alt="Perfume">
+ <h3>${safe(p.name)}</h3>
+ <p>${safe(p.desc)}</p>
+ <div class="price">₹${p.price}</div>
+ <div class="actions">
+ <button onclick="addCart(${p.id})">ADD TO CART</button>
+ <button onclick="buy(${p.id})">BUY NOW</button>
+ </div></div>`).join("");
+ document.getElementById("count").textContent=cart.length;
+ renderManage();
+}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function addCart(id){let p=products.find(x=>x.id===id);if(p){cart.push(p);document.getElementById("count").textContent=cart.length;alert("Added to cart")}}
+function showCart(){
+ document.getElementById("cart").classList.remove("hidden");
+ document.getElementById("cartItems").innerHTML=cart.map(p=>`<p>${safe(p.name)} — ₹${p.price}</p>`).join("")||"Your cart is empty";
+ document.getElementById("total").textContent="Total: ₹"+cart.reduce((s,p)=>s+p.price,0);
+}
+function closeCart(){document.getElementById("cart").classList.add("hidden")}
+function checkout(){
+ if(!cart.length)return alert("Cart is empty");
+ let msg="Hello, I want to order:%0A"+cart.map(p=>encodeURIComponent(p.name+" - ₹"+p.price)).join("%0A")+
+ "%0ATotal: ₹"+cart.reduce((s,p)=>s+p.price,0);
+ window.open("https://wa.me/"+WA+"?text="+msg,"_blank");
+}
+function buy(id){let p=products.find(x=>x.id===id);if(p)window.open("https://wa.me/"+WA+"?text="+encodeURIComponent("Hello, I want to order "+p.name+" for ₹"+p.price)," _blank")}
+function contactUs(){window.open("https://wa.me/"+WA+"?text="+encodeURIComponent("Hello, I want to know about your perfumes."),"_blank")}
+function adminLogin(){
+ if(document.getElementById("pin").value==="1234"){
+ document.getElementById("admin").classList.remove("hidden");
+ document.getElementById("login").classList.add("hidden");
+ }else alert("Incorrect PIN");
+}
+function addProduct(){
+ let name=document.getElementById("pname").value.trim();
+ let price=Number(document.getElementById("pprice").value);
+ let desc=document.getElementById("pdesc").value.trim();
+ let file=document.getElementById("pimage").files[0];
+ if(!name||price<=0||!file)return alert("Enter name, valid price and photo");
+ if(file.size>1500000)return alert("Please choose a photo under 1.5 MB");
+ let reader=new FileReader();
+ reader.onload=()=>{
+ products.push({id:Date.now(),name,price,desc,img:reader.result});
+ try{save();render();alert("Product added");}
+ catch(e){alert("Storage full. Use smaller photos.");}
+ };
+ reader.readAsDataURL(file);
+}
+function renderManage(){
+ let el=document.getElementById("manage");if(!el)return;
+ el.innerHTML=products.map(p=>`<p>${safe(p.name)} — ₹${p.price}
+ <button onclick="editPrice(${p.id})">EDIT PRICE</button>
+ <button onclick="deleteProduct(${p.id})">DELETE</button></p>`).join("");
+}
+function editPrice(id){
+ let p=products.find(x=>x.id===id);let n=prompt("New price",p.price);
+ if(n!==null&&Number(n)>0){p.price=Number(n);save();render()}
+}
+function deleteProduct(id){
+ if(confirm("Delete this product?")){products=products.filter(p=>p.id!==id);save();render()}
+}
+render();
+</script>
+</body>
+</html>
