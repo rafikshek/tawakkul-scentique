@@ -136,6 +136,23 @@ r.readAsDataURL(f);
 function edit(i){let p=prompt("New price",products[i].price);if(p&&Number(p)>0){products[i].price=Number(p);save();render()}}
 function removeP(i){if(confirm("Delete product?")){products.splice(i,1);save();render()}}
 render();
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPq5hx7poa0LzvOSKnRQ860kW-KTMfNyU",
+    authDomain: "tawakkul-scentique.firebaseapp.com",
+    projectId: "tawakkul-scentique",
+    storageBucket: "tawakkul-scentique.firebasestorage.app",
+    messagingSenderId: "924052559477",
+    appId: "1:924052559477:web:d3de4bf9ef7c9437190a3c",
+    measurementId: "G-M48ZDCYRZQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 </script>
+
 </body>
 </html>
