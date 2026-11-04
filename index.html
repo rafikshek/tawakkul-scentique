@@ -136,6 +136,7 @@ r.readAsDataURL(f);
 function edit(i){let p=prompt("New price",products[i].price);if(p&&Number(p)>0){products[i].price=Number(p);save();render()}}
 function removeP(i){if(confirm("Delete product?")){products.splice(i,1);save();render()}}
 render();
+  </script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
