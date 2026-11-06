@@ -264,7 +264,40 @@ signInWithPhoneNumber
   const auth = getAuth(app);
   window.firebaseLogin = (email,password) =>
   signInWithEmailAndPassword(auth,email,password);
-  // CUSTOMER SIGN UP
+  let confirmationResult;
+
+window.sendOTP = async function() {
+  const mobile = document.getElementById("cmobile").value.trim();
+
+  if (!/^[6-9]\d{9}$/.test(mobile)) {
+    alert("Sahi 10 digit mobile number dalein");
+    return;
+  }
+
+  try {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      { size: "invisible" }
+    );
+
+    const phoneNumber = "+91" + mobile;
+
+    confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      window.recaptchaVerifier
+    );
+
+    alert("OTP SMS bhej diya gaya hai");
+  } catch (error) {
+    alert(error.message);
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
+    }
+  }
+};// CUSTOMER SIGN UP
 window.customerSignup = async function() {
   const name = document.getElementById("cname").value.trim();
   const mobile = document.getElementById("cmobile").value.trim();
