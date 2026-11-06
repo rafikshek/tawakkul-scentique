@@ -89,6 +89,7 @@ footer{text-align:center;padding:35px;background:#f7f4ed;margin-top:40px}
 <div id="items"></div>
 <h3 id="total"></h3>
 <button onclick="checkout()">ORDER ON WHATSAPP</button>
+<button onclick="payNow()">PAY ₹10 TEST</button>
 <button onclick="closeCart()">CLOSE</button>
 </div>
 <div class="panel" id="login">
@@ -157,6 +158,9 @@ document.getElementById("items").innerHTML=cart.map(p=>"<p>"+p.name+" ₹"+p.pri
 document.getElementById("total").textContent="Total ₹"+cart.reduce((s,p)=>s+p.price,0);
 }
 function closeCart(){document.getElementById("cart").classList.add("hidden")}
+ function payNow(){
+  window.open("https://rzp.io/rzp/YhaAzeiQ","_blank");
+  }
 function checkout(){
 if(!cart.length)return alert("Cart empty");
 let msg="Hello, my order:%0A"+cart.map(p=>encodeURIComponent(p.name+" ₹"+p.price)).join("%0A");
