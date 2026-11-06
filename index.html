@@ -112,15 +112,15 @@ footer{text-align:center;padding:35px;background:#f7f4ed;margin-top:40px}
   <input id="cpassword" type="password" placeholder="Password">
   <input id="cconfirm" type="password" placeholder="Confirm Password">
 
-  <button type="button">SIGN UP</button>
+  <button type="button" onclick="customerSignup()">SIGN UP</button>
 
   <hr>
 
   <h3>CUSTOMER LOGIN</h3>
   <input id="loginEmail" type="email" placeholder="Gmail">
   <input id="loginPassword" type="password" placeholder="Password">
-  <button type="button">LOGIN</button>
-  <p><a href="#">Forgot Password?</a></p>
+  <button type="button" onclick="customerLogin()">LOGIN</button>
+  <p><a href="#" onclick="customerForgotPassword();return false;">Forgot Password?</a></p>
 </div>
 <div class="panel hidden" id="admin">
 <h2>ADMIN PANEL</h2>
@@ -235,8 +235,18 @@ render();
 <script type="module">
   
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyAPq5hx7poa0LzvOSKnRQ860kW-KTMfNyU",
     authDomain: "tawakkul-scentique.firebaseapp.com",
@@ -252,6 +262,80 @@ import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/fir
   const auth = getAuth(app);
   window.firebaseLogin = (email,password) =>
   signInWithEmailAndPassword(auth,email,password);
+  // CUSTOMER SIGN UP
+window.customerSignup = async function() {
+  const name = document.getElementById("cname").value.trim();
+  const mobile = document.getElementById("cmobile").value.trim();
+  const state = document.getElementById("cstate").value.trim();
+  const pincode = document.getElementById("cpincode").value.trim();
+  const email = document.getElementById("cemail").value.trim();
+  const password = document.getElementById("cpassword").value;
+  const confirm = document.getElementById("cconfirm").value;
+
+  if (!name || !mobile || !state || !pincode || !email || !password) {
+    alert("Please fill all details");
+    return;
+  }
+
+  if (password !== confirm) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  if (password.length < 6) {
+    alert("Password minimum 6 characters hona chahiye");
+    return;
+  }
+
+  try {
+    const result = await createUserWithEmailAndPassword(
+      auth, email, password
+    );
+
+    await setDoc(doc(db, "customers", result.user.uid), {
+      name: name,
+      mobile: mobile,
+      state: state,
+      pincode: pincode,
+      email: email,
+      createdAt: serverTimestamp()
+    });
+
+    alert("Account created successfully!");
+  } catch(error) {
+    alert(error.message);
+  }
+};
+
+// CUSTOMER LOGIN
+window.customerLogin = async function() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Customer Login Successful!");
+  } catch(error) {
+    alert(error.message);
+  }
+};
+
+// FORGOT PASSWORD
+window.customerForgotPassword = async function() {
+  const email = document.getElementById("loginEmail").value.trim();
+
+  if (!email) {
+    alert("Pehle Gmail enter karein");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Password reset link Gmail par bhej diya gaya hai.");
+  } catch(error) {
+    alert(error.message);
+  }
+};
 </script>
 
 </body>
