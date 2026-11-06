@@ -104,6 +104,7 @@ footer{text-align:center;padding:35px;background:#f7f4ed;margin-top:40px}
 <input id="price" type="number" placeholder="Price ₹">
 <input id="desc" placeholder="Description">
 <input id="photo" type="file" accept="image/*">
+  <input id="paylink" type="url" placeholder="Razorpay Payment Link">
 <button type="button" onclick="removePhoto()">REMOVE PHOTO</button>
 <button onclick="add()">ADD PRODUCT</button>
 <div id="manage"></div>
@@ -167,7 +168,14 @@ let msg="Hello, my order:%0A"+cart.map(p=>encodeURIComponent(p.name+" ₹"+p.pri
 msg+="%0ATotal ₹"+cart.reduce((s,p)=>s+p.price,0);
 window.open("https://wa.me/"+WA+"?text="+msg);
 }
-function buy(i){let p=products[i];window.open("https://wa.me/"+WA+"?text="+encodeURIComponent("I want "+p.name+" ₹"+p.price))}
+function buy(i){
+  let p=products[i];
+  if(p.paylink){
+    window.open(p.paylink,"_blank");
+  }else{
+    alert("Payment link not added");
+  }
+}
 function contact(){window.open("https://wa.me/"+WA)}
 async function login(){
 const email=document.getElementById("email").value.trim();
@@ -192,7 +200,8 @@ let f=document.getElementById("photo").files[0];
 if(!n||p<=0||!f)return alert("Enter all details and photo");
 if(f.size>1000000)return alert("Photo must be under 1 MB");
 let r=new FileReader();
-r.onload=()=>{products.push({name:n,price:p,desc:d,img:r.result});try{save();render();alert("Product added")}catch(e){alert("Storage full")} };
+let link=document.getElementById("paylink").value.trim();
+products.push({name:n,price:p,desc:d,img:r.result,paylink:link});try{save();render();alert("Product added")}catch(e){alert("Storage full")} };
 r.readAsDataURL(f);
 }
 function edit(i){let p=prompt("New price",products[i].price);if(p&&Number(p)>0){products[i].price=Number(p);save();render()}}
