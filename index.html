@@ -202,16 +202,25 @@ function buy(i){
   }
 }
 function contact(){window.open("https://wa.me/"+WA)}
-async function login(){
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
-try{
-await window.firebaseLogin(email,password);
-document.getElementById("admin").classList.remove("hidden");
-document.getElementById("login").classList.add("hidden");
-}catch(error){
-alert("Login failed: "+error.message);
-}
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  try {
+    await firebaseLogin(email, password);
+
+    if (email.toLowerCase() !== "princemaazn@gmail.com") {
+      alert("Access denied! Admin account required.");
+      return;
+    }
+
+    document.getElementById("admin").classList.remove("hidden");
+    document.getElementById("login").classList.add("hidden");
+
+    alert("Admin Login Successful!");
+  } catch (error) {
+    alert("Login failed: " + error.message);
+  }
 }
 function removePhoto(){
   document.getElementById("photo").value = "";
