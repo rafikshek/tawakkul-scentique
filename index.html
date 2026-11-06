@@ -123,6 +123,21 @@ footer{text-align:center;padding:35px;background:#f7f4ed;margin-top:40px}
   <button type="button" onclick="customerLogin()">LOGIN</button>
   <p><a href="#" onclick="customerForgotPassword();return false;">Forgot Password?</a></p>
 </div>
+  <div class="panel hidden" id="customer-dashboard">
+  <h2>TAWAKKUL SCENTIQUE</h2>
+  <h3>MY SHOPPING DASHBOARD</h3>
+
+  <button onclick="document.getElementById('shop').scrollIntoView()">
+    SHOP PERFUMES
+  </button>
+
+  <button onclick="showCart()">MY CART</button>
+
+  <h3>MY ORDERS</h3>
+  <div id="my-orders">Your orders will appear here.</div>
+
+  <button onclick="customerLogout()">LOGOUT</button>
+  </div>
 <div class="panel hidden" id="admin">
 <h2>ADMIN PANEL</h2>
 <input id="name" placeholder="Perfume Name">
@@ -256,7 +271,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,RecaptchaVerifier,
-signInWithPhoneNumber
+signInWithPhoneNumber,
+  signOut,
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyAPq5hx7poa0LzvOSKnRQ860kW-KTMfNyU",
@@ -358,12 +374,20 @@ window.customerLogin = async function() {
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    alert("Customer Login Successful!");
+
+    document.getElementById("customer-auth").classList.add("hidden");
+    document.getElementById("customer-dashboard").classList.remove("hidden");
+
+    alert("Customer Dashboard Opened!");
   } catch(error) {
-    alert(error.message);
+    alert("Login failed: " + error.message);
   }
 };
-
+window.customerLogout = async function() {
+  await signOut(auth);
+  document.getElementById("customer-dashboard").classList.add("hidden");
+  document.getElementById("customer-auth").classList.remove("hidden");
+};
 // FORGOT PASSWORD
 window.customerForgotPassword = async function() {
   const email = document.getElementById("loginEmail").value.trim();
