@@ -192,6 +192,7 @@ document.getElementById("manage").innerHTML=products.map((p,i)=>`
 <button onclick="edit(${i})">EDIT</button>
 <button onclick="removeP(${i})">DELETE</button></p>`).join("");
 }
+  render();
 function addCart(i){cart.push(products[i]);render();alert("Added to cart")}
 function showCart(){
 document.getElementById("cart").classList.remove("hidden");
