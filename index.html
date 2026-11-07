@@ -209,7 +209,17 @@ msg+="%0ATotal ₹"+cart.reduce((s,p)=>s+p.price,0);
 window.open("https://wa.me/"+WA+"?text="+msg);
 }
 function buy(i){
-  let p=products[i];
+  let dashboard = document.getElementById("customer-dashboard");
+
+  if(dashboard.classList.contains("hidden")){
+    let loginBox = document.getElementById("customer-auth");
+    loginBox.scrollIntoView({behavior:"smooth"});
+    alert("Please login first");
+    return;
+  }
+
+  let p = products[i];
+
   if(p.paylink){
     window.open(p.paylink,"_blank");
   }else{
