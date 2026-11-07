@@ -368,6 +368,7 @@ window.customerSignup = async function() {
 };
 
 // CUSTOMER LOGIN
+// CUSTOMER LOGIN
 window.customerLogin = async function() {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
@@ -375,11 +376,12 @@ window.customerLogin = async function() {
   try {
     await signInWithEmailAndPassword(auth, email, password);
 
+    document.getElementById("customer-auth").style.display = "none";
     document.getElementById("customer-auth").classList.add("hidden");
-    document.getElementById("customer-dashboard").classList.remove("hidden");
-
-    alert("Customer Dashboard Opened!");
-  } catch(error) {
+    document.getElementById("customer-dashboard").style.display = "block";
+ document.getElementById("customer-dashboard").classList.remove("hidden");
+    alert("Dashboard Opened!");
+  } catch (error) {
     alert("Login failed: " + error.message);
   }
 };
